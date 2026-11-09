@@ -1,0 +1,19 @@
+{
+  "function": "f2",
+  "method": "One-Dimensional Minimization",
+  "initial_x": 0.49076120467488715,
+  "initial_y": -0.5038268343236509,
+  "final_x": 0.49999890129078095,
+  "final_y": -0.500000340129595,
+  "minimum_value": 0.25000000000040346,
+  "gradient_norm": 7.626120483735158e-07,
+  "iterations": 15,
+  "function_evaluations": 752,
+  "gradient_evaluations": 16,
+  "elapsed_seconds": 0.0096149000000878,
+  "status": "converged",
+  "point_error": 1.1501522027321228e-06,
+  "absolute_objective_error": 4.034550471487819e-13,
+  "max_abs_successive_gradient_cosine": 0.9999999514635509,
+  "near_upper_boundary_steps": 6
+}

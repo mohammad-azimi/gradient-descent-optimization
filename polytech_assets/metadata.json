@@ -1,0 +1,14 @@
+{
+  "report_category": "PRACTICAL WORK REPORT",
+  "report_title": "Gradient Descent Methods",
+  "cover_lines": ["Gradient Descent", "for Unconstrained", "Minimization"],
+  "header_title": "Gradient Descent Methods",
+  "institute": "Institute of Cybersecurity and Computer Science",
+  "authors": ["Mohammad Azimi", "Mohammad Abrahim Abrahimi"],
+  "group": "Group 5140901/61701",
+  "subgroup": "Practical subgroup 1",
+  "course": "Methods of Optimization and Decision Making",
+  "instructor": "Родионова Елена Александровна",
+  "city": "Saint Petersburg",
+  "year": "2026"
+}

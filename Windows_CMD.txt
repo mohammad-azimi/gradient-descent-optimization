@@ -1,0 +1,11 @@
+Open Windows CMD inside the extracted uncond_group1 folder.
+
+py -m venv .venv
+.venv\Scripts\activate
+python -m pip install -r requirements.txt
+python run_experiments.py
+python validate.py
+python build_report.py
+start "" results\figures\paths_f1.png
+start "" results\figures\paths_f2.png
+start "" report\Gradient_Descent_Group1_Report.docx

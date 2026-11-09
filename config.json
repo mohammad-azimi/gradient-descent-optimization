@@ -1,0 +1,11 @@
+{
+  "initial_point": [2.0, 2.0],
+  "initial_step": 0.8,
+  "reduction_factor": 0.5,
+  "armijo_epsilon": 0.1,
+  "tolerance": 0.000001,
+  "max_iterations": 10000,
+  "line_tolerance": 0.0000000001,
+  "max_line_iterations": 200,
+  "max_backtracks": 100
+}

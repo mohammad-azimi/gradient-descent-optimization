@@ -1,0 +1,156 @@
+{
+  "created_utc": "2026-11-09T11:50:51.029143+00:00",
+  "settings": {
+    "initial_point": [
+      2.0,
+      2.0
+    ],
+    "initial_step": 0.8,
+    "reduction_factor": 0.5,
+    "armijo_epsilon": 0.1,
+    "tolerance": 1e-06,
+    "max_iterations": 10000,
+    "line_tolerance": 1e-10,
+    "max_line_iterations": 200,
+    "max_backtracks": 100
+  },
+  "references": {
+    "f1": {
+      "point": [
+        0.8127668071299918,
+        -0.3436165964350041
+      ],
+      "value": 0.022268227723418965,
+      "root_point": [
+        0.8127668071299922,
+        -0.34361659643500386
+      ],
+      "root_residual": 4.440892098500626e-16,
+      "root_distance": 4.002966042486721e-16,
+      "root_solver_success": true,
+      "t_brent": 0.6255336142599838,
+      "t_lambert": 0.6255336142599842,
+      "scalar_residual": 1.2212453270876722e-15
+    },
+    "f2": {
+      "point": [
+        0.5,
+        -0.5
+      ],
+      "value": 0.25,
+      "root_point": [
+        0.49999999999999994,
+        -0.5
+      ],
+      "root_residual": 0.0,
+      "root_distance": 5.551115123125783e-17,
+      "root_solver_success": true,
+      "scalar_residual": 0.0
+    }
+  },
+  "summary": [
+    {
+      "function": "f1",
+      "method": "Step Division",
+      "initial_x": 2.0,
+      "initial_y": 2.0,
+      "final_x": 0.812766885714061,
+      "final_y": -0.3436164577399653,
+      "minimum_value": 0.02226822772347814,
+      "gradient_norm": 7.503054386675736e-07,
+      "iterations": 10,
+      "function_evaluations": 27,
+      "gradient_evaluations": 11,
+      "elapsed_seconds": 0.0009391000003233785,
+      "status": "converged",
+      "point_error": 1.5941069508319283e-07,
+      "absolute_objective_error": 5.917488721252084e-14,
+      "max_abs_successive_gradient_cosine": 0.9999466102317491,
+      "near_upper_boundary_steps": 0,
+      "median_time_ms": 0.7237999998324085,
+      "min_time_ms": 0.6829999992987723,
+      "max_time_ms": 1.292299999477109,
+      "timing_repeats": 31
+    },
+    {
+      "function": "f1",
+      "method": "One-Dimensional Minimization",
+      "initial_x": 2.0,
+      "initial_y": 2.0,
+      "final_x": 0.812766813515377,
+      "final_y": -0.34361659830567143,
+      "minimum_value": 0.022268227723418965,
+      "gradient_norm": 1.627582270291668e-08,
+      "iterations": 5,
+      "function_evaluations": 252,
+      "gradient_evaluations": 6,
+      "elapsed_seconds": 0.0028323999995336635,
+      "status": "converged",
+      "point_error": 6.653761396702452e-09,
+      "absolute_objective_error": 0.0,
+      "max_abs_successive_gradient_cosine": 8.37555096650326e-06,
+      "near_upper_boundary_steps": 0,
+      "median_time_ms": 2.851600000212784,
+      "min_time_ms": 2.62639999982639,
+      "max_time_ms": 5.765099999734957,
+      "timing_repeats": 31
+    },
+    {
+      "function": "f2",
+      "method": "Step Division",
+      "initial_x": 2.0,
+      "initial_y": 2.0,
+      "final_x": 0.49999946834142134,
+      "final_y": -0.5000003599162848,
+      "minimum_value": 0.25000000000014433,
+      "gradient_norm": 5.743677967900054e-07,
+      "iterations": 33,
+      "function_evaluations": 58,
+      "gradient_evaluations": 34,
+      "elapsed_seconds": 0.002602900000056252,
+      "status": "converged",
+      "point_error": 6.420284855919197e-07,
+      "absolute_objective_error": 1.4432899320127035e-13,
+      "max_abs_successive_gradient_cosine": 0.9977974968158827,
+      "near_upper_boundary_steps": 0,
+      "median_time_ms": 2.128199999788194,
+      "min_time_ms": 2.01909999941563,
+      "max_time_ms": 3.5364000004847185,
+      "timing_repeats": 31
+    },
+    {
+      "function": "f2",
+      "method": "One-Dimensional Minimization",
+      "initial_x": 2.0,
+      "initial_y": 2.0,
+      "final_x": 0.5000009265279527,
+      "final_y": -0.49999977254028155,
+      "minimum_value": 0.2500000000002963,
+      "gradient_norm": 7.404762192104637e-07,
+      "iterations": 39,
+      "function_evaluations": 1952,
+      "gradient_evaluations": 40,
+      "elapsed_seconds": 0.025837000000137778,
+      "status": "converged",
+      "point_error": 9.540398160663592e-07,
+      "absolute_objective_error": 2.963185252724543e-13,
+      "max_abs_successive_gradient_cosine": 1.1557567928676289e-07,
+      "near_upper_boundary_steps": 0,
+      "median_time_ms": 25.83429999958753,
+      "min_time_ms": 22.844699999950535,
+      "max_time_ms": 32.71339999992051,
+      "timing_repeats": 31
+    }
+  ],
+  "environment": {
+    "python": "3.12.6 (tags/v3.12.6:a4a2d2b, Sep  6 2024, 20:11:23) [MSC v.1940 64 bit (AMD64)]",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "processor": "Intel64 Family 6 Model 158 Stepping 9, GenuineIntel",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "scipy": "1.18.1"
+  },
+  "function_evaluation_convention": "One call per scalar objective or stable objective-increment evaluation. Includes rejected trials and final direct verification. Excludes plots, references, diagnostics and other runs.",
+  "interval": "0 < alpha < 1, as in lecture slide 25",
+  "timing_convention": "perf_counter inside solve, including history, excluding I/O, plots, references and diagnostics; one warm-up then repeated solves"
+}
