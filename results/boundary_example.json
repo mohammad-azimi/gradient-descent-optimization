@@ -10,7 +10,7 @@
   "iterations": 15,
   "function_evaluations": 752,
   "gradient_evaluations": 16,
-  "elapsed_seconds": 0.0096149000000878,
+  "elapsed_seconds": 0.010404699998616707,
   "status": "converged",
   "point_error": 1.1501522027321228e-06,
   "absolute_objective_error": 4.034550471487819e-13,
