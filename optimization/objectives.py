@@ -31,41 +31,48 @@ class Objective:
     key: str
     name: str
     kind: str
+    a: float = 1.0
+    b: float = 2.0
+    c: float = 1.0
+    d: float = 1.0
+    k: float = -1.0
+    m: float = 2.0
 
     def value(self, point):
-        x, y = np.asarray(point, dtype=float)
-        with np.errstate(over="ignore", invalid="ignore"):
-            nonlinear = np.exp(-x - y) if self.kind == "exp" else np.cos(x + y)
-            return float(x*x + 2*y*y + nonlinear - x + 2*y)
+        return float(self.grid(*np.asarray(point, dtype=float)))
 
     def gradient(self, point):
         x, y = np.asarray(point, dtype=float)
         with np.errstate(over="ignore", invalid="ignore"):
-            v = np.exp(-x-y) if self.kind == "exp" else np.sin(x+y)
-            return np.array([2*x - v - 1, 4*y - v + 2], dtype=float)
+            s = self.c*x + self.d*y
+            v = np.exp(-s) if self.kind == "exp" else np.sin(s)
+            return np.array([2*self.a*x - self.c*v + self.k, 2*self.b*y - self.d*v + self.m], dtype=float)
 
     def hessian(self, point):
         x, y = np.asarray(point, dtype=float)
-        v = np.exp(-x-y) if self.kind == "exp" else -np.cos(x+y)
-        return np.diag([2.0, 4.0]) + v * np.ones((2, 2))
+        with np.errstate(over="ignore", invalid="ignore"):
+            s = self.c*x + self.d*y
+            v = np.exp(-s) if self.kind == "exp" else -np.cos(s)
+            return np.diag([2*self.a, 2*self.b]) + v*np.outer([self.c, self.d], [self.c, self.d])
 
     def change(self, point, displacement, gradient):
         x, y = np.asarray(point, dtype=float)
         dx, dy = np.asarray(displacement, dtype=float)
-        ds = dx + dy
-        quadratic = dx*dx + 2*dy*dy
         with np.errstate(over="ignore", invalid="ignore"):
+            s = self.c*x + self.d*y
+            ds = self.c*dx + self.d*dy
+            quadratic = self.a*dx*dx + self.b*dy*dy
             if self.kind == "exp":
-                nonlinear = np.exp(-x-y) * exp_remainder(-ds)
+                nonlinear = np.exp(-s) * exp_remainder(-ds)
             else:
-                s = x+y
                 nonlinear = -2*np.cos(s)*np.sin(ds/2)**2 + np.sin(s)*sin_remainder(ds)
             return float(np.dot(gradient, displacement) + quadratic + nonlinear)
 
     def grid(self, x, y):
         with np.errstate(over="ignore", invalid="ignore"):
-            v = np.exp(-x-y) if self.kind == "exp" else np.cos(x+y)
-            return x*x + 2*y*y + v - x + 2*y
+            s = self.c*x + self.d*y
+            v = np.exp(-s) if self.kind == "exp" else np.cos(s)
+            return self.a*x*x + self.b*y*y + v + self.k*x + self.m*y
 
 
 OBJECTIVES = {

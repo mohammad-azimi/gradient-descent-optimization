@@ -2,6 +2,30 @@
 
 Practical project for Methods of Optimization and Decision Making at Peter the Great St. Petersburg Polytechnic University. Group 1 uses the first parameter row of both assignment objectives. The comparison covers an exponential and a cosine objective, each with a unique global minimizer.
 
+## Desktop app
+
+Open **Optimization Lab** to compare methods from a visual interface. It starts with F1 at the origin and compares all ten configurations. The form accepts the coefficients of F1 or F2, a new starting point, the gradient tolerance and the iteration limit. Select a method preset or choose individual methods. **Advanced settings** exposes the line search, matrix and Broyden parameters, optional adaptive Broyden runs and timing repeats.
+
+From the project directory in Windows CMD, launch the window using the existing environment.
+
+```cmd
+.venv\Scripts\python.exe run_gui.py
+```
+
+You can also open `launch_optimizer_gui.cmd` from the project folder. The desktop app uses Tkinter and the existing project dependencies. On a Python installation without Tk support, install the optional Tcl/Tk component for that Python interpreter.
+
+| Tab | What it shows |
+| --- | --- |
+| Overview | Termination, final objective and gradient norm, iteration count, evaluation counts and solver time |
+| Iterations | Every point starting from `X_0` with two selected runs aligned by iteration. Select a row to inspect the gradient, search direction and update details. |
+| Trajectories | Search paths over objective contours. The method selector isolates one path and the toolbar supports zoom, pan and saving the current plot. |
+| Convergence | Objective value, gradient norm, reference error or step length, and step size |
+| Work | A comparison of selected operation counts or median solver time |
+
+For the live demonstration, select **BFGS pair**, click the **0, 10** starting point, and run. The fixed-step run stops after three accepted updates on F1. Golden Section converges in five. Open **Iterations** to compare the two paths. Press **F11** for full screen and **Ctrl+Enter** to run.
+
+With custom coefficients, a reference minimum is shown when the app can verify strong convexity and solve the stationarity equation. Each run shows the actual termination status. **Export session** writes the input settings, full iteration histories, summary, timing samples and three PNG charts into a new subdirectory of a folder you choose.
+
 ## Method configurations
 
 | CLI method | Search direction | Step rule |

@@ -9,19 +9,21 @@ def finite(value):
 
 
 def convergence_rows(run, reference, local_radius):
-    point_ref = np.asarray(reference["point"])
-    floor = 64 * np.finfo(float).eps * max(1.0, np.linalg.norm(point_ref))
+    point_ref = np.asarray(reference["point"]) if reference is not None else None
+    floor = (64 * np.finfo(float).eps * max(1.0, np.linalg.norm(point_ref))
+             if point_ref is not None else None)
     rows, errors = [], []
     for index, item in enumerate(run.history):
         point = np.asarray(item.point)
-        error = float(np.linalg.norm(point - point_ref))
+        error = finite(np.linalg.norm(point - point_ref)) if point_ref is not None else None
         previous_error = errors[-1] if errors else None
         ratio = quadratic_ratio = order = None
-        valid_pair = previous_error is not None and min(error, previous_error) > floor
+        valid_pair = error is not None and previous_error is not None and min(error, previous_error) > floor
         if valid_pair:
             ratio = error / previous_error
             quadratic_ratio = ratio / previous_error
-            if len(errors) >= 2 and floor < error < previous_error < errors[-2] <= local_radius:
+            if (len(errors) >= 2 and errors[-2] is not None
+                    and floor < error < previous_error < errors[-2] <= local_radius):
                 previous_log_ratio = math.log(previous_error) - math.log(errors[-2])
                 if abs(previous_log_ratio) > 1e-3:
                     order = (math.log(error) - math.log(previous_error)) / previous_log_ratio
@@ -31,7 +33,7 @@ def convergence_rows(run, reference, local_radius):
             "x": finite(point[0]),
             "y": finite(point[1]),
             "objective": finite(item.value),
-            "objective_gap": finite(item.value - reference["value"]),
+            "objective_gap": finite(item.value - reference["value"]) if reference is not None else None,
             "gradient_x": finite(item.gradient[0]) if item.gradient else None,
             "gradient_y": finite(item.gradient[1]) if item.gradient else None,
             "gradient_norm": finite(item.gradient_norm),
@@ -39,9 +41,9 @@ def convergence_rows(run, reference, local_radius):
             "error_ratio": finite(ratio),
             "quadratic_ratio": finite(quadratic_ratio),
             "local_order": finite(order),
-            "error_reliable": int(error > floor),
+            "error_reliable": int(error is not None and error > floor),
             "alpha": finite(item.alpha),
-            "step_norm": float(np.linalg.norm(point - run.history[index-1].point)) if index else None,
+            "step_norm": finite(np.linalg.norm(point - run.history[index-1].point)) if index else None,
             "direction_x": finite(item.direction[0]) if item.direction else None,
             "direction_y": finite(item.direction[1]) if item.direction else None,
             "objective_change": finite(item.objective_change),
