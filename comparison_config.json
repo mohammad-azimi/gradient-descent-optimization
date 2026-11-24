@@ -1,0 +1,12 @@
+{
+  "initial_points": [[0, 0], [0, 10], [10, 0]],
+  "benchmark_repeats": 31,
+  "local_error_radius": 0.01,
+  "solver": {
+    "line_lower": 1e-8,
+    "line_upper": 1.0,
+    "matrix_rcond": 1e-12,
+    "curvature_tolerance": 1e-12,
+    "broyden_phi": 0.5
+  }
+}

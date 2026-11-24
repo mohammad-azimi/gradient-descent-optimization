@@ -1,5 +1,4 @@
 import argparse
-import csv
 from dataclasses import asdict, replace
 from datetime import datetime, timezone
 import json
@@ -12,25 +11,12 @@ import numpy as np
 import scipy
 
 from optimization import OBJECTIVES, Settings, solve
+from optimization.exports import write_csv, write_json
 from optimization.reference import reference_solutions
 
 
 ROOT = Path(__file__).resolve().parent
 
-
-def write_csv(path, rows):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    if not rows:
-        return
-    with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
-
-
-def write_json(path, value):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, indent=2, allow_nan=False)+"\n", encoding="utf-8")
 
 
 def enhanced_summary(result, references):

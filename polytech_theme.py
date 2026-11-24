@@ -250,7 +250,7 @@ def add_cover(doc, data, assets):
     r = p.add_run(data["instructor"])
     set_font(r, 11.5)
     r.italic = True
-    paragraph(data["city"], 12, before=64, after=5)
+    paragraph(data["city"], 12, before=data.get("city_spacing", 64), after=5)
     paragraph(data["year"], 12)
     return prefix
 
@@ -308,11 +308,13 @@ def configure_sections(doc, data, assets):
     footer._p.append(field)
 
 
-def restyle_report(source, output=None, assets=ASSETS):
+def restyle_report(source, output=None, assets=ASSETS, *, cover_overrides=None, separate_abstract=True):
     source = Path(source)
     output = source if output is None else Path(output)
     assets = Path(assets)
     data = json.loads((assets/"metadata.json").read_text(encoding="utf-8"))
+    if cover_overrides:
+        data.update(cover_overrides)
     doc = Document(source)
     if MARKER in (doc.core_properties.keywords or ""):
         if source != output:
@@ -356,15 +358,16 @@ def restyle_report(source, output=None, assets=ASSETS):
     prefix.append(h._p)
     for text in abstract:
         prefix.append(doc.add_paragraph(text)._p)
-    p = doc.add_paragraph()
-    p.add_run().add_break(WD_BREAK.PAGE)
-    prefix.append(p._p)
+    if separate_abstract:
+        p = doc.add_paragraph()
+        p.add_run().add_break(WD_BREAK.PAGE)
+        prefix.append(p._p)
     for node in prefix:
         node.getparent().remove(node)
     for i, node in enumerate(prefix):
         body.insert(i, node)
     configure_sections(doc, data, assets)
-    doc.core_properties.title = "Gradient Descent for Two Unconstrained Objectives"
+    doc.core_properties.title = data.get("document_title", "Gradient Descent for Two Unconstrained Objectives")
     doc.core_properties.author = "; ".join(data["authors"])
     doc.core_properties.keywords = MARKER
     final_tables = [[c.text for row in table.rows for c in row.cells] for table in doc.tables]

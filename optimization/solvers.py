@@ -27,8 +27,8 @@ class Settings:
 
     def validate(self):
         point = np.asarray(self.initial_point, dtype=float)
-        if point.shape != (2,) or not np.all(np.isfinite(point)):
-            raise ValueError("The initial point must contain two finite coordinates.")
+        if point.ndim != 1 or point.size == 0 or not np.all(np.isfinite(point)):
+            raise ValueError("The initial point must be a nonempty finite vector.")
         for key in ["initial_step", "reduction_factor", "armijo_epsilon"]:
             value = getattr(self, key)
             if not (math.isfinite(value) and 0 < value < 1):
@@ -57,9 +57,12 @@ class Oracle:
         self.gradient_evaluations += 1
         return self.objective.gradient(point)
 
-    def change(self, point, displacement, gradient):
+    def change(self, point, displacement, gradient, current_value=None):
         self.function_evaluations += 1
-        return self.objective.change(point, displacement, gradient)
+        increment = getattr(self.objective, "change", None)
+        if increment is not None:
+            return increment(point, displacement, gradient)
+        return self.objective.value(point + displacement) - current_value
 
 
 @dataclass
@@ -76,13 +79,16 @@ class Result:
 
     def summary(self):
         last = self.history[-1]
+        initial = self.settings["initial_point"]
+        coordinates = (
+            {"initial_x": initial[0], "initial_y": initial[1], "final_x": last["x"], "final_y": last["y"]}
+            if len(initial) == 2
+            else {"initial_point": tuple(initial), "final_point": last["point"]}
+        )
         return {
             "function": self.objective,
             "method": METHOD_NAMES[self.method],
-            "initial_x": self.settings["initial_point"][0],
-            "initial_y": self.settings["initial_point"][1],
-            "final_x": last["x"],
-            "final_y": last["y"],
+            **coordinates,
             "minimum_value": last["value"],
             "gradient_norm": last["gradient_norm"],
             "iterations": self.iterations,
@@ -102,7 +108,9 @@ def solve(objective, method, settings=None):
     oracle = Oracle(objective)
     x = np.asarray(settings.initial_point, dtype=float).copy()
     value = oracle.value(x)
-    gradient = oracle.gradient(x)
+    gradient = np.asarray(oracle.gradient(x), dtype=float)
+    if np.shape(gradient) != x.shape:
+        raise ValueError("The gradient must have the same shape as the point.")
     history = []
     previous_gradient = None
     status = "max_iterations"
@@ -123,10 +131,13 @@ def solve(objective, method, settings=None):
             cosine = float(np.clip(dot/denominator, -1, 1)) if denominator > 0 else None
             angle = float(np.degrees(np.arccos(cosine))) if cosine is not None else None
             derivative = -dot
+        coordinates = {"x": float(x[0]), "y": float(x[1])} if x.size == 2 else {"point": tuple(x)}
+        derivatives = (
+            {"gradient_x": float(gradient[0]), "gradient_y": float(gradient[1])}
+            if x.size == 2 else {"gradient": tuple(gradient)}
+        )
         history.append({
-            "iteration": k, "x": float(x[0]), "y": float(x[1]),
-            "value": value, "gradient_x": float(gradient[0]),
-            "gradient_y": float(gradient[1]), "gradient_norm": norm,
+            "iteration": k, **coordinates, "value": value, **derivatives, "gradient_norm": norm,
             "alpha_from_previous": alpha, "step_norm_from_previous": step_norm,
             "objective_change_from_previous": change,
             "backtracks_from_previous": backtracks,
@@ -158,7 +169,7 @@ def solve(objective, method, settings=None):
             line_iterations = 0
             line_width = 0.0
             for attempt in range(settings.max_backtracks + 1):
-                change = oracle.change(x, alpha*direction, gradient)
+                change = oracle.change(x, alpha*direction, gradient, value)
                 if math.isfinite(change) and change <= -settings.armijo_epsilon*alpha*squared_norm:
                     break
                 if attempt == settings.max_backtracks:
@@ -170,7 +181,7 @@ def solve(objective, method, settings=None):
                 break
         else:
             line = golden_section(
-                lambda a: oracle.change(x, a*direction, gradient),
+                lambda a: oracle.change(x, a*direction, gradient, value),
                 0.0, 1.0, settings.line_tolerance, settings.max_line_iterations,
             )
             alpha, change = line.alpha, line.value
@@ -190,11 +201,15 @@ def solve(objective, method, settings=None):
         step_norm = float(np.linalg.norm(next_x-x))
         x = next_x
         value = float(value + change)
-        gradient = oracle.gradient(x)
+        gradient = np.asarray(oracle.gradient(x), dtype=float)
+        if gradient.shape != x.shape:
+            raise ValueError("The gradient must have the same shape as the point.")
         record(k+1)
-    if np.all(np.isfinite(gradient)) and float(np.linalg.norm(gradient)) < settings.tolerance:
-        status = "converged"
     value = oracle.value(x)
+    if not (np.all(np.isfinite(x)) and math.isfinite(value) and np.all(np.isfinite(gradient))):
+        status = "nonfinite_state"
+    elif float(np.linalg.norm(gradient)) < settings.tolerance:
+        status = "converged"
     history[-1]["value"] = value
     history[-1]["function_evaluations"] = oracle.function_evaluations
     history[-1]["gradient_evaluations"] = oracle.gradient_evaluations

@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "cases_checked": 72,
+  "primary_cases": 60,
+  "adaptive_cases": 12,
+  "timed_samples_checked": 2232,
+  "newton_pairs_checked": 12,
+  "max_newton_trajectory_distance": 3.3801030863611766e-10,
+  "max_closed_line_alpha_error": 1.6792784718333564e-08,
+  "max_relative_direction_residual": 4.3267349264464407e-13,
+  "max_relative_secant_residual": 4.727728329770149e-13,
+  "statuses": {
+    "converged": 58,
+    "nonfinite_objective": 2
+  }
+}

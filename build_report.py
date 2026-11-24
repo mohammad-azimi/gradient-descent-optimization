@@ -154,7 +154,8 @@ class Report:
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p.paragraph_format.keep_with_next = True
         p.paragraph_format.space_after = Pt(3)
-        p.add_run().add_picture(str(file), width=Inches(width))
+        shape = p.add_run().add_picture(str(file), width=Inches(width))
+        shape._inline.docPr.set("descr", caption)
         p = self.p(caption, "Caption")
         p.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
@@ -212,7 +213,13 @@ def main():
     parser = argparse.ArgumentParser(description="Generate the English report from saved results")
     parser.add_argument("--results", type=Path, default=ROOT/"results")
     parser.add_argument("--output", type=Path, default=ROOT/"report"/"Gradient_Descent_Group1_Report.docx")
+    parser.add_argument("--comparison", type=Path, help="Include the Newton and quasi-Newton experiments.")
     args = parser.parse_args()
+    if args.comparison is not None:
+        from comparison_report import build_comparison
+        build_comparison(Report, args.results, args.comparison, args.output)
+        print(f"Report written to {args.output}")
+        return
     result_dir = args.results.resolve()
     metadata = json.loads((result_dir/"experiment.json").read_text(encoding="utf-8"))
     summary = metadata["summary"]

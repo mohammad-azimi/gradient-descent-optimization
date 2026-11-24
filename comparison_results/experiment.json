@@ -1,0 +1,99 @@
+{
+  "created_utc": "2026-11-24T11:50:07.915128+00:00",
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "numpy": "2.3.5"
+  },
+  "settings": {
+    "initial_point": [
+      2.0,
+      2.0
+    ],
+    "initial_step": 0.8,
+    "reduction_factor": 0.5,
+    "armijo_epsilon": 0.1,
+    "tolerance": 1e-06,
+    "max_iterations": 10000,
+    "line_tolerance": 1e-10,
+    "max_line_iterations": 200,
+    "max_backtracks": 100,
+    "line_lower": 1e-08,
+    "line_upper": 1.0,
+    "matrix_rcond": 1e-12,
+    "curvature_tolerance": 1e-12,
+    "broyden_phi": 0.5,
+    "adaptive_phi": false
+  },
+  "initial_points": [
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      10
+    ],
+    [
+      10,
+      0
+    ]
+  ],
+  "functions": [
+    "f1",
+    "f2"
+  ],
+  "methods": [
+    "division",
+    "golden",
+    "newton_inverse_fixed",
+    "newton_inverse_golden",
+    "newton_solve_fixed",
+    "newton_solve_golden",
+    "bfgs_fixed",
+    "bfgs_golden",
+    "broyden_fixed",
+    "broyden_golden"
+  ],
+  "reference_solutions": {
+    "f1": {
+      "point": [
+        0.8127668071299918,
+        -0.3436165964350041
+      ],
+      "value": 0.022268227723418965,
+      "root_point": [
+        0.8127668071299922,
+        -0.34361659643500386
+      ],
+      "root_residual": 4.440892098500626e-16,
+      "root_distance": 4.002966042486721e-16,
+      "root_solver_success": true,
+      "t_brent": 0.6255336142599838,
+      "t_lambert": 0.6255336142599842,
+      "scalar_residual": 1.2212453270876722e-15
+    },
+    "f2": {
+      "point": [
+        0.5,
+        -0.5
+      ],
+      "value": 0.25,
+      "root_point": [
+        0.49999999999999994,
+        -0.5
+      ],
+      "root_residual": 0.0,
+      "root_distance": 5.551115123125783e-17,
+      "root_solver_success": true,
+      "scalar_residual": 0.0
+    }
+  },
+  "benchmark_repeats": 31,
+  "local_error_radius": 0.01,
+  "point_error_reliability_floor": "64 machine epsilons times max(1, norm(reference))",
+  "primary_runs": 60,
+  "adaptive_runs": 12,
+  "counting": "Objective values and stable objective increments each count once. The legacy solvers accumulate increments and verify the final value. The new solvers evaluate the objective directly at each accepted point. Closed Golden Section counts both endpoint trials. Matrix checks, Hessians, inversions and solves count attempts. Reference, plotting and analysis work are outside these counters.",
+  "timing": "Single process; one warm-up per case then repeated solver calls. The solver timer includes history and safeguards. It excludes reference calculations, reformatting the legacy traces, plots and file I/O."
+}

@@ -37,11 +37,11 @@ EQUATIONS = {
 }
 
 
-def render_equations(destination):
+def render_equations(destination, equations=EQUATIONS):
     destination = Path(destination)
     destination.mkdir(parents=True, exist_ok=True)
     manifest = {}
-    for name, latex in EQUATIONS.items():
+    for name, latex in equations.items():
         file = destination/f"{name}.png"
         math_to_image("$"+latex+"$", file, prop=FontProperties(size=12), dpi=350, color="black")
         with Image.open(file) as image:

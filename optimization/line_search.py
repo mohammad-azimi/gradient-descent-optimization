@@ -11,7 +11,8 @@ class LineResult:
     converged: bool
 
 
-def golden_section(function, lower=0.0, upper=1.0, tolerance=1e-10, max_iterations=200):
+def golden_section(function, lower=0.0, upper=1.0, tolerance=1e-10, max_iterations=200,
+                   *, include_endpoints=False):
     if not (math.isfinite(lower) and math.isfinite(upper) and lower < upper):
         raise ValueError("The search interval must have finite ordered endpoints.")
     if not (math.isfinite(tolerance) and tolerance > 0):
@@ -34,4 +35,10 @@ def golden_section(function, lower=0.0, upper=1.0, tolerance=1e-10, max_iteratio
             fd = function(d)
         count += 1
     alpha, value = (c, fc) if fc <= fd else (d, fd)
+    if include_endpoints:
+        # An exact boundary candidate wins a tie in the closed interval.
+        alpha, value = min(
+            ((lower, function(lower)), (upper, function(upper)), (alpha, value)),
+            key=lambda candidate: candidate[1],
+        )
     return LineResult(alpha, value, count, b-a, b-a <= tolerance)

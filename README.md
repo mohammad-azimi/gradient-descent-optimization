@@ -1,10 +1,100 @@
-# Gradient descent for two unconstrained objectives
+# Unconstrained Multidimensional Optimization
 
-Practical project for Methods of Optimization and Decision Making at Peter the Great St Petersburg Polytechnic University. Group 1 uses the first data row of both assignment tables.
+Practical project for Methods of Optimization and Decision Making at Peter the Great St. Petersburg Polytechnic University. Group 1 uses the first parameter row of both assignment objectives. The comparison covers an exponential and a cosine objective, each with a unique global minimizer.
 
-The project implements gradient descent with step division and gradient descent with a custom golden section line search. Both run on both objectives. SciPy is used only for independent reference and validation calculations.
+## Method configurations
+
+| CLI method | Search direction | Step rule |
+| --- | --- | --- |
+| `division` | Negative gradient | Original sufficient decrease and step division |
+| `golden` | Negative gradient | Original Golden Section on the open interval (0, 1) |
+| `newton_inverse_fixed` | Explicit inverse of the analytical Hessian | Unit |
+| `newton_inverse_golden` | Explicit inverse of the analytical Hessian | Closed Golden Section |
+| `newton_solve_fixed` | Linear solve with the analytical Hessian | Unit |
+| `newton_solve_golden` | Linear solve with the analytical Hessian | Closed Golden Section |
+| `bfgs_fixed` | Linear solve with a BFGS Hessian approximation | Unit |
+| `bfgs_golden` | Linear solve with a BFGS Hessian approximation | Closed Golden Section |
+| `broyden_fixed` | Linear solve with a Broyden Hessian approximation, φ = 0.5 | Unit |
+| `broyden_golden` | Linear solve with a Broyden Hessian approximation, φ = 0.5 | Closed Golden Section |
+
+Every main run stops on a gradient norm strictly below 1e-6 or records a termination status and the last valid iterate. Closed Golden Section compares both endpoints on [1e-8, 1] by default. The bracket bounds, width tolerance, outer tolerance and iteration limits are independent. The constant-step configurations always use α = 1.
+
+The Broyden formula uses Hessian notation. Parameter zero gives BFGS and parameter one gives DFP. The proposed value 0.5 is a restricted Broyden-class member. Its rank-one correction is orthogonal to the secant displacement, which preserves the secant equation. The optional sensitivity comparison bounds an adaptive parameter to [0.1, 0.9] using the relative mismatch between the observed gradient change and the model prediction. The use of the Broyden class follows the reconstructed lecture explanation and Nocedal and Wright, [Numerical Optimization, second edition](https://doi.org/10.1007/978-0-387-40065-5), §6.3.
 
 ## Windows CMD
+
+Python 3.11 or newer is required. Run these commands from the repository root for a new setup.
+
+```cmd
+py -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+Use the existing virtual environment when dependencies are already installed. The tests compare both Newton directions, check the Hessian BFGS and DFP endpoints, verify the closed line interval, and match the original gradient descent snapshots.
+
+```cmd
+.venv\Scripts\python.exe -m unittest discover -s tests -v
+.venv\Scripts\python.exe validate_comparison.py --check-only
+```
+
+Run the complete comparison in a separate directory, validate the exported files, and rebuild the updated Word report.
+
+```cmd
+set "GD_RUN=%TEMP%\gradient-comparison-%RANDOM%-%RANDOM%"
+.venv\Scripts\python.exe run_comparison.py --output "%GD_RUN%"
+.venv\Scripts\python.exe validate_comparison.py --results "%GD_RUN%"
+.venv\Scripts\python.exe build_report.py --comparison "%GD_RUN%" --output "%GD_RUN%\Gradient_Descent_Group1_Report.docx"
+start "" "%GD_RUN%\Gradient_Descent_Group1_Report.docx"
+```
+
+For a quick demonstration, select an objective, method and starting point to print the full sequence of iterates. The command below writes its own output in the Windows temporary directory.
+
+```cmd
+.venv\Scripts\python.exe run_comparison.py --function f1 --method newton_solve_fixed --x0 0 10 --show-iterates --no-plots --benchmark-repeats 3 --output "%TEMP%\gd-newton-demo"
+```
+
+Use `run_comparison.py --help` for the interval bounds, tolerances, benchmark repetitions and `--no-adaptive`. The original `run_experiments.py` still accepts `division` and `golden` and writes the original output schema.
+
+## Published comparison
+
+The 60 primary cases combine ten methods, two objectives and the three starting points (0, 0), (0, 10) and (10, 0). Fifty-eight converged. Both failed runs used unit-step quasi-Newton on F1 from (0, 10). The first trial moved to (1, −32), where the exponential raises the objective from about 220 to 2.90e13. Each run retained its nonfinite-objective status. Both Golden Section configurations converged in 5 updates from the same point.
+
+| Example | Updates | Function calls | Hessian calls |
+| --- | ---: | ---: | ---: |
+| F1 from (10, 0), Newton solve with unit steps | 4 | 5 | 4 |
+| F1 from (10, 0), Newton solve with Golden Section | 3 | 160 | 3 |
+| F2 from (0, 10), original step division | 35 | 62 | 0 |
+| F2 from (0, 10), BFGS with Golden Section | 7 | 372 | 0 |
+
+The two Newton direction calculations gave the same iteration counts for every matched case. All four Newton configurations converged in all six cases. The adaptive parameter was tested in 12 additional runs. One converged matched case improved from 7 to 6 updates, and one worsened from 17 to 41. All six adaptive Golden Section counts matched their constant-parameter counterparts.
+
+Recorded timings are medians from 31 repetitions per configuration after a warm-up. Costs include solver bookkeeping and numerical safeguards. Timing differences in two dimensions are sensitive to the machine and operating system.
+
+| File or directory | Contents |
+| --- | --- |
+| [comparison_results/summary.csv](comparison_results/summary.csv) | All 60 main cases with work counters, error and final status |
+| [comparison_results/adaptive_comparison.csv](comparison_results/adaptive_comparison.csv) | Matched constant and adaptive parameter cases |
+| [comparison_results/histories](comparison_results/histories) | Every accepted point, incoming direction, step, error and update diagnostics |
+| [comparison_results/convergence_rates.csv](comparison_results/convergence_rates.csv) | Local order observations above the error reliability floor |
+| [comparison_results/figures](comparison_results/figures) | Trajectories, convergence, cost and the local Newton model |
+| [comparison_results/validation.json](comparison_results/validation.json) | Export validation and independent line-step checks |
+| [report/Gradient_Descent_Group1_Report.docx](report/Gradient_Descent_Group1_Report.docx) | Comparative report in the original Polytech format |
+| [presentation_comparison.md](presentation_comparison.md) | English speaking notes, demonstration commands and questions |
+| `results/` and `demo_*/` | Original baseline snapshots and demonstrations |
+
+## Reuse from Python
+
+The public `minimize` function accepts any finite, nonempty initial vector. Provide an objective with a `key`, `value(point)` and `gradient(point)`. Newton also needs `hessian(point)`. If supplied, `change(point, displacement, gradient)` should return an accurate scalar objective increment. The examples and CLI plots use two-dimensional objectives. Dense Newton and Hessian-form quasi-Newton require O(n²) matrix storage and dense linear solves, so a large neural-network experiment would need another strategy.
+
+```python
+from optimization import OBJECTIVES, OptimizationSettings, minimize
+
+settings = OptimizationSettings(initial_point=(0, 10), tolerance=1e-6)
+run = minimize(OBJECTIVES["f1"], "bfgs_golden", settings)
+print(run.status, run.history[-1].point, run.counts)
+```
+
+## Original gradient descent workflow
 
 Use Python 3.11 or newer. Extract this folder, open CMD inside it, then run:
 
@@ -14,10 +104,10 @@ py -m venv .venv
 python -m pip install -r requirements.txt
 python run_experiments.py
 python validate.py
-python build_report.py
+python build_report.py --output "report\Gradient_Descent_Baseline_Report.docx"
 ```
 
-All work runs on the CPU. `run_experiments.py` saves figures without requiring an interactive window. Open PNG files from `results\figures` in VS Code or your image viewer. The included Word report describes the included result snapshot. After changing the settings, rerun both experiments and the report builder to keep them consistent.
+All work runs on the CPU. `run_experiments.py` saves figures without requiring an interactive window. Open PNG files from `results\figures` in VS Code or your image viewer. The baseline-only report reads the original results snapshot. The comparative report also uses the new comparison results.
 
 Example commands:
 
